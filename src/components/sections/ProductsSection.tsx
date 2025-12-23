@@ -23,6 +23,7 @@ const products = [
     },
     color: "primary",
   },
+
   {
     id: "business",
     icon: Briefcase,
@@ -41,7 +42,7 @@ const products = [
       emi: "₹12,176",
       tenure: "60 months",
     },
-    color: "secondary",
+    color: "accent",
     featured: true,
   },
   {
@@ -62,7 +63,8 @@ const products = [
       emi: "₹3,418",
       tenure: "72 months",
     },
-    color: "accent",
+    color: "secondary",
+    // featured: true,
   },
 ];
 
@@ -82,8 +84,8 @@ export function ProductsSection() {
             Loan Solutions for Every Need
           </h2>
           <p className="text-lg text-muted-foreground animate-fade-up delay-100">
-            Whether you're looking for personal funds, business capital, or property-backed loans, 
-            we have the right solution.
+            Whether you're looking for personal funds, business capital, or
+            property-backed loans, we have the right solution.
           </p>
         </div>
 
@@ -94,7 +96,9 @@ export function ProductsSection() {
               key={product.id}
               id={product.id}
               className={`relative card-interactive p-6 lg:p-8 animate-fade-up ${
-                product.featured ? "ring-2 ring-secondary shadow-snapfin-glow" : ""
+                product.featured
+                  ? "ring-2 ring-secondary shadow-snapfin-glow"
+                  : ""
               }`}
               style={{ animationDelay: `${(index + 1) * 100}ms` }}
             >
@@ -129,9 +133,7 @@ export function ProductsSection() {
               </div>
 
               {/* Lead */}
-              <p className="text-muted-foreground mb-6">
-                {product.lead}
-              </p>
+              <p className="text-muted-foreground mb-6">{product.lead}</p>
 
               {/* Benefits */}
               <ul className="space-y-3 mb-6">
@@ -145,23 +147,33 @@ export function ProductsSection() {
 
               {/* Example */}
               <div className="bg-muted/50 rounded-xl p-4 mb-6">
-                <p className="text-xs text-muted-foreground mb-2">Representative Example</p>
+                <p className="text-xs text-muted-foreground mb-2">
+                  Representative Example
+                </p>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div>
                     <span className="text-muted-foreground">Amount: </span>
-                    <span className="font-semibold text-foreground">{product.example.amount}</span>
+                    <span className="font-semibold text-foreground">
+                      {product.example.amount}
+                    </span>
                   </div>
                   <div>
                     <span className="text-muted-foreground">APR: </span>
-                    <span className="font-semibold text-foreground">{product.example.apr} p.a.</span>
+                    <span className="font-semibold text-foreground">
+                      {product.example.apr} p.a.
+                    </span>
                   </div>
                   <div>
                     <span className="text-muted-foreground">EMI: </span>
-                    <span className="font-semibold text-foreground">₹{product.example.emi}</span>
+                    <span className="font-semibold text-foreground">
+                      ₹{product.example.emi}
+                    </span>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Tenure: </span>
-                    <span className="font-semibold text-foreground">{product.example.tenure}</span>
+                    <span className="font-semibold text-foreground">
+                      {product.example.tenure}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -172,7 +184,7 @@ export function ProductsSection() {
                 className="w-full group"
                 onClick={() => handleCheckEligibility(product.id)}
               >
-                Check Eligibility
+                Apply now
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>

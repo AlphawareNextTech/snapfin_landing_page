@@ -27,7 +27,7 @@ const navLinks = [
 ];
 
 const moreLinks = [
-  { name: "Sign In / Sign Up", href: "/auth" },
+  // { name: "Sign In / Sign Up", href: "/auth" },
   { name: "Contact Us", href: "/contact" },
   { name: "About Us", href: "/about-us" },
   { name: "Check Eligibility", href: "/eligibility" },

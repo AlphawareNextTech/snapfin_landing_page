@@ -37,11 +37,17 @@ export function Footer() {
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-3 lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <img src={snapfinLogo} alt="Snapfin" className="h-10 w-auto" />
+              <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
+                <span className="text-primary-foreground font-bold text-lg">
+                  S
+                </span>
+              </div>
+              <span className="text-xl font-bold text-foreground">Snapfin</span>
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed mb-6 max-w-sm">
-              AI-powered loan solutions with instant eligibility checks and transparent costs. 
-              Apply online for LAP, Personal, or Business Loans.
+              Smart loan solutions with instant eligibility checks and
+              transparent costs. Apply online for LAP, Personal, or Business
+              Loans.
             </p>
             <div className="flex items-center gap-3">
               <a
@@ -149,18 +155,18 @@ export function Footer() {
         {/* Contact Bar */}
         <div className="flex flex-wrap gap-6 mt-12 pt-8 border-t border-border">
           <a
-            href="mailto:support@snapfin.com"
+            href="mailto:contact@snapfin.ai"
             className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <Mail className="w-4 h-4" />
-            support@snapfin.com
+            contact@snapfin.ai
           </a>
           <a
-            href="tel:+911800123456"
+            href="tel:+8879876035"
             className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <Phone className="w-4 h-4" />
-            1800-123-456
+            8879876035
           </a>
           <span className="flex items-center gap-2 text-sm text-muted-foreground">
             <MapPin className="w-4 h-4" />
@@ -172,8 +178,9 @@ export function Footer() {
         <div className="mt-8 pt-8 border-t border-border">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-xs text-muted-foreground text-center md:text-left">
-              © 2024 Snapfin. All rights reserved. Loans are offered by partner lenders. 
-              Snapfin is a technology facilitator.
+              © {new Date().getFullYear()} Snapfin. All rights reserved. Loans
+              are offered by partner lenders. Snapfin is a technology
+              facilitator.
             </p>
             <p className="text-xs text-muted-foreground">
               Representative APR shown for sample calculations only.

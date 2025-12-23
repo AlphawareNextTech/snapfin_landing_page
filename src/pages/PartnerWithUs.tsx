@@ -85,7 +85,7 @@ export default function PartnerWithUs() {
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 animate-fade-up delay-100">Partner With
 Snapfin <br />
-              <span className="text-secondary">Snapfin AI</span>
+              <span className="text-secondary">Snapfin</span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto animate-fade-up delay-200">
               Join India's fastest-growing AI-powered lending ecosystem. 

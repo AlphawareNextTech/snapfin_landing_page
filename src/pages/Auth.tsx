@@ -266,11 +266,11 @@ export default function Auth() {
                   <FormInput
                     label="Enter OTP"
                     required
-                    placeholder="6-digit code"
+                    placeholder="4-digit code"
                     value={otp}
-                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 4))}
                     helperText="OTP sent to your mobile"
-                    success={otp.length === 6}
+                    success={otp.length === 4}
                   />
                 )}
               </>
