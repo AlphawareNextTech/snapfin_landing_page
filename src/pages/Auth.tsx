@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/ui/form-input";
 import { FormCheckbox } from "@/components/ui/form-checkbox";
 import snapfinLogo from "@/assets/snapfin-logo.png";
+import { QueryClient, useMutation } from "@tanstack/react-query";
 
 type AuthMode = "login" | "signup" | "otp";
 
@@ -13,7 +14,6 @@ export default function Auth() {
   const [mode, setMode] = useState<AuthMode>("login");
   const [isLoading, setIsLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
-
   // Form states
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,11 +22,14 @@ export default function Auth() {
   const [name, setName] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
-  
+
   // Error states
   const [termsError, setTermsError] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<{email?: string; password?: string; phone?: string}>({});
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string; phone?: string }>({});
+
+
+  
 
   // Load remembered credentials on mount
   useEffect(() => {
@@ -47,21 +50,21 @@ export default function Auth() {
 
   const validateForm = (): boolean => {
     const errors: typeof fieldErrors = {};
-    
+
     if (mode === "login" || mode === "signup") {
       if (!email) {
         errors.email = "Email is required";
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         errors.email = "Please enter a valid email address";
       }
-      
+
       if (!password) {
         errors.password = "Password is required";
       } else if (password.length < 6) {
         errors.password = "Password must be at least 6 characters";
       }
     }
-    
+
     if (mode === "otp" && !otpSent) {
       if (!phone) {
         errors.phone = "Phone number is required";
@@ -69,7 +72,7 @@ export default function Auth() {
         errors.phone = "Please enter a valid 10-digit phone number";
       }
     }
-    
+
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -77,19 +80,19 @@ export default function Auth() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError(null);
-    
+
     // Validate form
     if (!validateForm()) return;
-    
+
     // Validate terms acceptance for signup
     if (mode === "signup" && !acceptTerms) {
       setTermsError(true);
       return;
     }
-    
+
     setTermsError(false);
     setIsLoading(true);
-    
+
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
@@ -117,14 +120,14 @@ export default function Auth() {
       setAuthError("Please enter a valid 6-digit OTP");
       return;
     }
-    
+
     // Handle Remember Me
     if (rememberMe && mode === "login") {
       localStorage.setItem("snapfin_remember", JSON.stringify({ email }));
     } else {
       localStorage.removeItem("snapfin_remember");
     }
-    
+
     // Save user data to localStorage
     const userData = {
       name: mode === "signup" ? name : (localStorage.getItem("snapfin_user") ? JSON.parse(localStorage.getItem("snapfin_user")!).name : email.split("@")[0]),
@@ -134,9 +137,9 @@ export default function Auth() {
       lastLogin: new Date().toISOString()
     };
     localStorage.setItem("snapfin_user", JSON.stringify(userData));
-    
+
     setIsLoading(false);
-    
+
     // Check for redirect intent
     const redirectTo = localStorage.getItem("snapfin_redirect");
     if (redirectTo) {
@@ -185,17 +188,15 @@ export default function Auth() {
           <div className="flex gap-2 mb-6 p-1 bg-muted rounded-xl">
             <button
               onClick={() => { setMode("login"); setOtpSent(false); }}
-              className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all ${
-                mode === "login" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-              }`}
+              className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all ${mode === "login" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                }`}
             >
               Email
             </button>
             <button
               onClick={() => { setMode("otp"); setOtpSent(false); }}
-              className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all ${
-                mode === "otp" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-              }`}
+              className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all ${mode === "otp" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                }`}
             >
               OTP
             </button>
@@ -205,18 +206,38 @@ export default function Auth() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Signup Name */}
             {mode === "signup" && (
+              <div className="grid grid-cols-2 gap-4">
+
+                <FormInput
+                  label="First Name"
+                  required
+                  placeholder="Priya"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+                <FormInput
+                  label="Last Name"
+                  required
+                  placeholder="Verma"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+
+            )}
+            {mode === "signup" && (
               <FormInput
-                label="Full Name"
+                label="Mobile number"
                 required
-                placeholder="Priya Verma"
+                placeholder="XXXXXXX798"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
             )}
-
             {/* Email/Password Mode */}
             {(mode === "login" || mode === "signup") && (
               <>
+
                 <FormInput
                   label="Email Address"
                   required
@@ -245,6 +266,7 @@ export default function Auth() {
                 />
               </>
             )}
+
 
             {/* OTP Mode */}
             {mode === "otp" && (
