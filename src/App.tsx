@@ -19,6 +19,7 @@ import PersonalLoan from "./pages/PersonalLoan";
 import BusinessLoan from "./pages/BusinessLoan";
 import LoanAgainstProperty from "./pages/LoanAgainstProperty";
 import { AIChatbot } from "./components/AIChatbot";
+import { AuthProvider } from "./auth/AuthContext";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+       <AuthProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
@@ -47,6 +49,7 @@ const App = () => (
         </Routes>
         <AIChatbot />
       </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

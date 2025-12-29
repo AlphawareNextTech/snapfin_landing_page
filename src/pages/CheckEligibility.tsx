@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Shield, Lock, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,9 @@ import { FormInput } from "@/components/ui/form-input";
 import { FormSelect } from "@/components/ui/form-select";
 import { FormCheckbox } from "@/components/ui/form-checkbox";
 import { AlertBanner } from "@/components/ui/alert-banner";
+import axios from "axios";
+import api from "@/interceptor/axios";
+import type { LeadFormData, EligibilityLocationState } from "@/types";
 
 const loanTypes = [
   { value: "personal", label: "Personal Loan" },
@@ -18,57 +22,140 @@ const employmentTypes = [
   { value: "self-employed", label: "Self-Employed" },
   { value: "business-owner", label: "Business Owner" },
 ];
-
-const incomeRanges = [
-  { value: "below-25k", label: "Below ₹25,000" },
-  { value: "25k-50k", label: "₹25,000 - ₹50,000" },
-  { value: "50k-1l", label: "₹50,000 - ₹1,00,000" },
-  { value: "1l-2l", label: "₹1,00,000 - ₹2,00,000" },
-  { value: "above-2l", label: "Above ₹2,00,000" },
+const businessType = [
+  { label: "Sole Proprietorship", value: "sole_proprietorship" },
+  { label: "Partnership", value: "partnership" },
+  { label: "Private Limited", value: "pvt_ltd" },
+  { label: "Public Limited", value: "public_ltd" },
+  { label: "LLP", value: "llp" }
 ];
 
+
+// const incomeRanges = [
+//   { value: "below-25k", label: "Below ₹25,000" },
+//   { value: "25k-50k", label: "₹25,000 - ₹50,000" },
+//   { value: "50k-1l", label: "₹50,000 - ₹1,00,000" },
+//   { value: "1l-2l", label: "₹1,00,000 - ₹2,00,000" },
+//   { value: "above-2l", label: "Above ₹2,00,000" },
+// ];
+const propertyTypes = [
+  { value: "residential", label: "Residential" },
+  { value: "commercial", label: "Commercial" },
+  { value: "land", label: "Land" },
+  { value: "co-owned", label: "Co-Owned Property" },
+];
+
+
 export default function CheckEligibility() {
-  const [formData, setFormData] = useState({
-    loanType: "",
+  const location = useLocation();
+  const initialData = (location.state as EligibilityLocationState) || {};
+  const [formData, setFormData] = useState<LeadFormData>({
+    name: `${initialData.firstName ?? ""} ${initialData.lastName ?? ""}`.trim(),
+    email: "",
+    city: "",
+    mobileNumber: initialData.mobile || "",
+    loanType: initialData.loanType || "",
+    panNumber: "",
+    pincode: "",
     loanAmount: "",
     employment: "",
-    income: "",
-    phone: "",
+    propertyType: "",
+    organisationName: "",
+    businessVintage: "",
+    businessType: "",
     consent: false,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEligible, setIsEligible] = useState<boolean | null>(null);
 
-  const validatePhone = (phone: string) => {
-    return /^[6-9]\d{9}$/.test(phone);
+  const validatemobileNumber = (mobileNumber: string) => {
+    return /^[6-9]\d{9}$/.test(mobileNumber);
   };
+  const validatePAN = (panNumber: string) => {
+    return /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(panNumber);
+  };
+  const validatePincode = (pincode: string) => {
+    return /^[1-9][0-9]{5}$/.test(pincode);
+  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: Record<string, string> = {};
-
-    if (!formData.loanType) newErrors.loanType = "Please select a loan type";
+    if (!formData.name) newErrors.name = "Please enter your full name";
+    if (!formData.email) {
+      newErrors.email = "Please enter your email address";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+    if (!formData.city) {
+      newErrors.city = "Please enter your city";
+    }
     if (!formData.loanAmount) newErrors.loanAmount = "Please enter loan amount";
     if (!formData.employment) newErrors.employment = "Please select employment type";
-    if (!formData.income) newErrors.income = "Please select income range";
-    if (!formData.phone) {
-      newErrors.phone = "Please enter your mobile number";
-    } else if (!validatePhone(formData.phone)) {
-      newErrors.phone = "Please enter a valid 10-digit mobile number";
+    // if (!formData.income) newErrors.income = "Please select income range";
+    if (!formData.mobileNumber) {
+      newErrors.mobileNumber = "Please enter your mobile number";
+    } else if (!validatemobileNumber(formData.mobileNumber)) {
+      newErrors.mobileNumber = "Please enter a valid 10-digit mobile number";
     }
+    if (!formData.panNumber) {
+      newErrors.panNumber = "Please enter your PAN number";
+    } else if (!validatePAN(formData.panNumber)) {
+      newErrors.panNumber = "Please enter a valid PAN (ABCDE1234F)";
+    }
+    if (!formData.pincode) {
+      newErrors.pincode = "Please enter your pincode";
+    } else if (!validatePincode(formData.pincode)) {
+      newErrors.pincode = "Please enter a valid 6-digit pincode";
+    }
+    if (!formData.propertyType) {
+      newErrors.propertyType = "Please select property type";
+    }
+
     if (!formData.consent) newErrors.consent = "Please accept the terms to continue";
 
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length === 0) {
+    // if (Object.keys(newErrors).length === 0) {
+    //   setIsSubmitting(true);
+    //   // Simulate API call
+    //   await new Promise((resolve) => setTimeout(resolve, 1500));
+    //   setIsEligible(true);
+    //   setIsSubmitting(false);
+    // }
+
+
+    try {
       setIsSubmitting(true);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const payload = {
+        productKey: "business_loan",
+        formData,
+        notificationPreferences: {
+          sms: true,
+          email: true,
+        },
+      };
+
+      const response = await api.post(
+        `/api/customer/leads`,
+        payload,
+      );
+      // console.log("Lead created:", response.data);
       setIsEligible(true);
+
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        console.error("API Error:", error.response?.data);
+        setErrors({
+          api: error.response?.data?.message || "Lead creation failed",
+        });
+      }
+    } finally {
       setIsSubmitting(false);
     }
-  };
+  }
 
   if (isEligible) {
     return (
@@ -130,58 +217,162 @@ export default function CheckEligibility() {
             <div className="bg-card rounded-2xl border border-border shadow-snapfin-lg p-6 sm:p-8">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid sm:grid-cols-2 gap-6">
-                  <FormSelect
-                    label="Loan Type"
-                    required
-                    options={loanTypes}
-                    placeholder="Select loan type"
-                    value={formData.loanType}
-                    onChange={(e) => setFormData({ ...formData, loanType: e.target.value })}
-                    error={errors.loanType}
-                  />
                   <FormInput
-                    label="Loan Amount"
+                    label="Full Name"
                     required
                     type="text"
-                    placeholder="e.g., 5,00,000"
-                    value={formData.loanAmount}
-                    onChange={(e) => setFormData({ ...formData, loanAmount: e.target.value })}
-                    error={errors.loanAmount}
-                    helperText="Enter amount in ₹"
+                    placeholder="Enter Full Name"
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                    error={errors.firstName}
+                  />
+                  <FormInput
+                    label="Email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                    error={errors.email}
+                  />
+
+                  <FormInput
+                    label="City"
+                    value={formData.city}
+                    placeholder="Enter your city"
+                    onChange={(e) =>
+                      setFormData({ ...formData, city: e.target.value })
+                    }
+                    error={errors.city}
+                  />
+
+                  <FormInput
+                    label="Mobile Number"
+                    required
+                    type="tel"
+                    placeholder="10-digit mobile number"
+                    value={formData.mobileNumber}
+                    onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value.replace(/\D/g, "").slice(0, 10) })}
+                    error={errors.mobileNumber}
+                  />
+                  <FormInput
+                    label="PAN Number"
+                    required
+                    type="text"
+                    placeholder="ABCDE1234F"
+                    value={formData.panNumber}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        panNumber: e.target.value.toUpperCase().slice(0, 10),
+                      })
+                    }
+                    error={errors.panNumber}
+                    helperText="Used for eligibility check only"
+                  />
+
+                  <FormInput
+                    label="Pincode"
+                    required
+                    type="text"
+                    placeholder="6-digit pincode"
+                    value={formData.pincode}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        pincode: e.target.value.replace(/\D/g, "").slice(0, 6),
+                      })
+                    }
+                    error={errors.pincode}
+                    helperText="Used to check service availability"
                   />
                 </div>
 
-                <div className="grid sm:grid-cols-2 gap-6">
-                  <FormSelect
-                    label="Employment Type"
-                    required
-                    options={employmentTypes}
-                    placeholder="Select employment"
-                    value={formData.employment}
-                    onChange={(e) => setFormData({ ...formData, employment: e.target.value })}
-                    error={errors.employment}
-                  />
-                  <FormSelect
-                    label="Monthly Income"
-                    required
-                    options={incomeRanges}
-                    placeholder="Select income range"
-                    value={formData.income}
-                    onChange={(e) => setFormData({ ...formData, income: e.target.value })}
-                    error={errors.income}
-                  />
-                </div>
+                {["personal", "lap"].includes(formData.loanType) && (
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    <FormSelect
+                      label="Employment Type"
+                      required
+                      options={employmentTypes}
+                      placeholder="Select employment"
+                      value={formData.employment}
+                      onChange={(e) =>
+                        setFormData({ ...formData, employment: e.target.value })
+                      }
+                      error={errors.employment}
+                    />
 
-                <FormInput
-                  label="Mobile Number"
-                  required
-                  type="tel"
-                  placeholder="10-digit mobile number"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, "").slice(0, 10) })}
-                  error={errors.phone}
-                  helperText="We'll send OTP for verification"
-                />
+                    {/* Show Property Type ONLY for LAP */}
+                    {formData.loanType === "lap" && (
+                      <FormSelect
+                        label="Property Type"
+                        required
+                        options={propertyTypes}
+                        placeholder="Select property type"
+                        value={formData.propertyType}
+                        onChange={(e) =>
+                          setFormData({ ...formData, propertyType: e.target.value })
+                        }
+                        error={errors.propertyType}
+                      />
+                    )}
+                  </div>
+                )}
+
+                {formData.loanType === "business" && (
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    <FormInput
+                      label="Organization Name"
+                      required
+                      type="text"
+                      placeholder="Enter organization name"
+                      value={formData.organisationName}
+                      onChange={(e) =>
+                        setFormData({ ...formData, organisationName: e.target.value })
+                      }
+                      error={errors.organisationName}
+                    />
+
+                    <FormInput
+                      label="Business Vintage (Years)"
+                      required
+                      type="number"
+                      min={0}
+                      placeholder="e.g. 3"
+                      value={formData.businessVintage}
+                      onChange={(e) =>
+                        setFormData({ ...formData, businessVintage: e.target.value })
+                      }
+                      error={errors.businessVintage}
+                      helperText="Number of years in business"
+                    />
+                    <FormSelect
+                      label="Business Type"
+                      required
+                      options={businessType}
+                      placeholder="Select business type"
+                      value={formData.businessType}
+                      onChange={(e) =>
+                        setFormData({ ...formData, businessType: e.target.value })
+                      }
+                      error={errors.businessType}
+                    />
+                    <FormInput
+                      label="Loan Amount"
+                      required
+                      type="text"
+                      placeholder="e.g., 5,00,000"
+                      value={formData.loanAmount}
+                      onChange={(e) => setFormData({ ...formData, loanAmount: e.target.value })}
+                      error={errors.loanAmount}
+                      helperText="Enter amount in ₹"
+                    />
+                  </div>
+
+                )}
 
                 <FormCheckbox
                   checked={formData.consent}
