@@ -17,8 +17,11 @@ const trustBadges = [
 
 export function HeroSection() {
   const navigate = useNavigate();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [mobile, setMobile] = useState("");
   const [loanType, setLoanType] = useState("personal");
-  const [loanAmount, setLoanAmount] = useState("");
+  // const [loanAmount, setLoanAmount] = useState("");
 
   const handleApplyNow = () => {
     const user = localStorage.getItem("snapfin_user");
@@ -35,7 +38,15 @@ export function HeroSection() {
   };
 
   const handleCheckEligibility = () => {
-    navigate("/eligibility", { state: { loanType, loanAmount } });
+    navigate("/eligibility", {
+      state: {
+        firstName,
+        lastName,
+        mobile,
+        loanType,
+      },
+    });
+    // navigate("/eligibility", { state: { loanType, loanAmount } });
   };
 
   return (
@@ -58,11 +69,11 @@ export function HeroSection() {
         <div className="absolute inset-0 bg-background/80 dark:bg-background/90" />
         <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent" />
       </div>
-      
+
       {/* Decorative blurs */}
       <div className="absolute top-1/4 -right-1/4 w-1/2 h-1/2 bg-secondary/10 rounded-full blur-3xl" />
       <div className="absolute bottom-1/4 -left-1/4 w-1/2 h-1/2 bg-primary/10 rounded-full blur-3xl" />
-      
+
       <div className="container-snapfin relative">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Content */}
@@ -119,7 +130,6 @@ export function HeroSection() {
             <div className="relative bg-card rounded-3xl border border-border shadow-snapfin-xl p-8 lg:p-10">
               {/* Decorative gradient */}
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-secondary/5 via-transparent to-primary/5" />
-              
               <div className="relative">
                 {/* Stats Grid */}
                 <div className="grid grid-cols-3 gap-6 mb-8">
@@ -139,21 +149,65 @@ export function HeroSection() {
                 <div className="bg-muted/50 rounded-2xl p-6">
                   <h3 className="font-semibold text-foreground mb-4">Quick Eligibility Check</h3>
                   <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm text-muted-foreground mb-2">
-                        Loan Type
-                      </label>
-                      <select 
-                        value={loanType}
-                        onChange={(e) => setLoanType(e.target.value)}
-                        className="w-full h-12 px-4 rounded-xl bg-background border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-secondary/50"
-                      >
-                        <option value="personal">Personal Loan</option>
-                        <option value="lap">Loan Against Property</option>
-                        <option value="business">Business Loan</option>
-                      </select>
+                    {/* First & Last Name */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm text-muted-foreground mb-2">
+                          First Name
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Priya"
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          className="w-full h-12 px-4 rounded-xl bg-background border border-border focus:outline-none focus:ring-2 focus:ring-secondary/50"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm text-muted-foreground mb-2">
+                          Last Name
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Singh"
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                          className="w-full h-12 px-4 rounded-xl bg-background border border-border focus:outline-none focus:ring-2 focus:ring-secondary/50"
+                        />
+                      </div>
                     </div>
-                    <div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm text-muted-foreground mb-2">
+                          Mobile Number
+                        </label>
+                        <input
+                          type="tel"
+                          placeholder="10-digit mobile number"
+                          value={mobile}
+                          onChange={(e) =>
+                            setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))
+                          }
+                          className="w-full h-12 px-4 rounded-xl bg-background border border-border focus:outline-none focus:ring-2 focus:ring-secondary/50"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-muted-foreground mb-2">
+                          Loan Type
+                        </label>
+                        <select
+                          value={loanType}
+                          onChange={(e) => setLoanType(e.target.value)}
+                          className="w-full h-12 px-4 rounded-xl bg-background border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-secondary/50"
+                        >
+                          <option value="personal">Personal Loan</option>
+                          <option value="lap">Loan Against Property</option>
+                          <option value="business">Business Loan</option>
+                        </select>
+                      </div>
+                    </div>
+                    {/* <div>
                       <label className="block text-sm text-muted-foreground mb-2">
                         Loan Amount (₹)
                       </label>
@@ -164,7 +218,7 @@ export function HeroSection() {
                         onChange={(e) => setLoanAmount(e.target.value)}
                         className="w-full h-12 px-4 rounded-xl bg-background border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-secondary/50"
                       />
-                    </div>
+                    </div> */}
                     <Button variant="hero" className="w-full" size="lg" onClick={handleCheckEligibility}>
                       Check Eligibility
                       <ArrowRight className="w-5 h-5" />
