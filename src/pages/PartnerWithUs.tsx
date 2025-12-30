@@ -115,7 +115,7 @@ Snapfin <br />
                       <Sparkles className="w-6 h-6 text-primary-foreground" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-bold text-foreground">Become a Partner</h2>
+                      <h2 className="text-xl font-bold text-foreground">Become a Growth Partner</h2>
                       <p className="text-sm text-muted-foreground">Fill out the form to get started</p>
                     </div>
                   </div>
