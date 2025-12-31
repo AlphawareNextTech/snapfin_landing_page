@@ -95,12 +95,12 @@ export default function Dashboard() {
   });
 
   // Check if user is logged in
-  useEffect(() => {
-    const savedUser = localStorage.getItem("snapfin_user");
-    if (!savedUser || !JSON.parse(savedUser).isLoggedIn) {
-      navigate("/auth");
-    }
-  }, [navigate]);
+  // useEffect(() => {
+  //   const savedUser = localStorage.getItem("snapfin_user");
+  //   if (!savedUser || !JSON.parse(savedUser).isLoggedIn) {
+  //     navigate("/auth");
+  //   }
+  // }, [navigate]);
 
   // Get greeting based on time of day
   const getGreeting = () => {

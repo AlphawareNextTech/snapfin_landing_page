@@ -142,7 +142,7 @@ export default function CheckEligibility() {
         `/api/customer/leads`,
         payload,
       );
-      // console.log("Lead created:", response.data);
+      console.log("Lead created:", response.data);
       setIsEligible(true);
 
     } catch (error: any) {

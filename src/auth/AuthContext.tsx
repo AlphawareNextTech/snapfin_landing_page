@@ -7,16 +7,6 @@ import React, {
   type ReactNode,
 } from "react";
 
-// Interface for the raw user data returned by your API
-interface IUserResponse {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  mobileNumber: string;
-  email: string;
-  role?: { name: string };
-}
-
 // Interface for the user stored in context
 export interface User {
   id: string;
@@ -33,8 +23,10 @@ interface AuthContextType {
   loading: boolean;
   isAuthenticated: boolean;
   user: User | null;
-  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  login: (token: string, user: User) => void;
+  logout: () => void;
+  // setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+  // setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 // Props for AuthProvider
@@ -51,44 +43,41 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [user, setUser] = useState<User | null>(null);
 
-  const checkStatus = async () => {
-    try {
-      const response = await api<{ data: IUserResponse }>({
-        method: "GET",
-        url: "/user/me",
-      });
+  // Restore auth from localStorage on app load
+  useEffect(() => {
+    const token = localStorage.getItem("snapfin_token");
+    const storedUser = localStorage.getItem("snapfin_user");
+    console.log('toekn', token)
+    console.log('storeduser', storedUser)
 
-      const userData = response.data.data;
-
-      if (!userData) {
-        setIsAuthenticated(false);
-        setUser(null);
-        return;
-      }
-
-      setUser({
-        id: String(userData._id),
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        mobileNumber: userData.mobileNumber,
-        phone: userData.mobileNumber,
-        email: userData.email,
-        role: userData.role?.name || "NA",
-      });
-
+    if (token && storedUser) {
       setIsAuthenticated(true);
-    } catch (error) {
+      setUser(JSON.parse(storedUser));
+    } else {
       setIsAuthenticated(false);
       setUser(null);
-    } finally {
-      setLoading(false);
     }
+
+    setLoading(false);
+  }, []);
+
+  // 🔹 LOGIN (single source of truth)
+  const login = (token: string, userData: User) => {
+    localStorage.setItem("snapfin_token", token);
+    localStorage.setItem("snapfin_user", JSON.stringify(userData));
+
+    setUser(userData);
+    setIsAuthenticated(true);
   };
 
-  useEffect(() => {
-    checkStatus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // 🔹 LOGOUT
+  const logout = () => {
+    localStorage.removeItem("snapfin_token");
+    localStorage.removeItem("snapfin_user");
+
+    setUser(null);
+    setIsAuthenticated(false);
+  };
 
   if (loading) {
     return <>...Loading</>;
@@ -100,8 +89,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         loading,
         isAuthenticated,
         user,
-        setIsAuthenticated,
-        setUser,
+        login,
+        logout,
       }}
     >
       {children}

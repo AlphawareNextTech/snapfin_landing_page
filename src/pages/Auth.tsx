@@ -438,7 +438,7 @@ type AuthMode = "login" | "signup" | "otp";
 
 export default function Auth() {
   const navigate = useNavigate();
-  const { setIsAuthenticated } = useAuth();
+  // const { setIsAuthenticated } = useAuth();
   const [mode, setMode] = useState<AuthMode>("login");
   const [isLoading, setIsLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
@@ -462,6 +462,12 @@ export default function Auth() {
 
 
 
+ useEffect(() => {
+    const token = localStorage.getItem("snapfin_token");
+    if (token) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [navigate]);
 
   // Load remembered credentials on mount
   useEffect(() => {
@@ -595,7 +601,7 @@ export default function Auth() {
         );
 
         // update auth state
-        setIsAuthenticated(true);
+        // setIsAuthenticated(true);
 
         //  navigate ONLY after token exists
         navigate("/dashboard");

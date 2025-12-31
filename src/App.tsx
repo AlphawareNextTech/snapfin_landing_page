@@ -28,7 +28,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-       <AuthProvider>
+       {/* <AuthProvider> */}
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
@@ -49,7 +49,7 @@ const App = () => (
         </Routes>
         <AIChatbot />
       </BrowserRouter>
-      </AuthProvider>
+      {/* </AuthProvider> */}
     </TooltipProvider>
   </QueryClientProvider>
 );
