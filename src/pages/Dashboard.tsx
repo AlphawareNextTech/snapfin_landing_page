@@ -189,6 +189,7 @@ export default function Dashboard() {
     label: "Settings"
   }];
   const handleLogout = () => {
+    localStorage.removeItem("snapfin_token");
     localStorage.removeItem("snapfin_user");
     navigate("/");
   };

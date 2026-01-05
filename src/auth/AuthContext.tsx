@@ -63,6 +63,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // 🔹 LOGIN (single source of truth)
   const login = (token: string, userData: User) => {
+    // console.log('userdata',userData)
+    if (!token) return;
     localStorage.setItem("snapfin_token", token);
     localStorage.setItem("snapfin_user", JSON.stringify(userData));
 
