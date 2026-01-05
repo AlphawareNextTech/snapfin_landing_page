@@ -432,13 +432,14 @@ import { FormCheckbox } from "@/components/ui/form-checkbox";
 import snapfinLogo from "@/assets/snapfin-logo.png";
 import { QueryClient, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/auth/AuthContext";
+
 import api from "@/interceptor/axios";
 
 type AuthMode = "login" | "signup" | "otp";
 
 export default function Auth() {
   const navigate = useNavigate();
-  // const { setIsAuthenticated } = useAuth();
+  const { login } = useAuth();
   const [mode, setMode] = useState<AuthMode>("login");
   const [isLoading, setIsLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
@@ -462,12 +463,12 @@ export default function Auth() {
 
 
 
- useEffect(() => {
-    const token = localStorage.getItem("snapfin_token");
-    if (token) {
-      navigate("/dashboard", { replace: true });
-    }
-  }, [navigate]);
+  //  useEffect(() => {
+  //     const token = localStorage.getItem("snapfin_token");
+  //     if (token) {
+  //       navigate("/dashboard", { replace: true });
+  //     }
+  //   }, [navigate]);
 
   // Load remembered credentials on mount
   useEffect(() => {
@@ -587,21 +588,19 @@ export default function Auth() {
 
         // extract token safely
         const token = data?.data?.token;
-
+        const account = data?.data?.account;
         if (!token) {
           throw new Error("Token not received");
         }
 
-        localStorage.setItem("snapfin_token", token);
+        // localStorage.setItem("snapfin_token", token);
 
-        // optional: store user
-        localStorage.setItem(
-          "snapfin_user",
-          JSON.stringify(data.data.account)
-        );
-
-        // update auth state
-        // setIsAuthenticated(true);
+        // // optional: store user
+        // localStorage.setItem(
+        //   "snapfin_user",
+        //   JSON.stringify(data.data.account)
+        // );
+        login(token, account);
 
         //  navigate ONLY after token exists
         navigate("/dashboard");

@@ -17,13 +17,13 @@ interface FormData {
 export default function CIBILScore() {
 
   const splitFullName = (fullName: string) => {
-  const parts = fullName.trim().split(" ").filter(Boolean);
+    const parts = fullName.trim().split(" ").filter(Boolean);
 
-  return {
-    first_name: parts[0] || "",
-    last_name: parts.slice(1).join(" ") || "",
+    return {
+      first_name: parts[0] || "",
+      last_name: parts.slice(1).join(" ") || "",
+    };
   };
-};
 
   const [step, setStep] = useState<Step>("form");
   const [formData, setFormData] = useState<FormData>({
@@ -35,10 +35,13 @@ export default function CIBILScore() {
   });
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [score, setScore] = useState(0);
-  
+
   const validate = () => {
     const newErrors: Partial<FormData> = {};
-    if (!formData.fullName) newErrors.fullName = "Name is required";
+    // if (!formData.fullName) newErrors.fullName = "Name is required";
+    if (!formData.fullName.trim().includes(" ")) {
+      newErrors.fullName = "Please enter your full name (First & Last name)";
+    }
     if (!formData.phone || !/^\d{10}$/.test(formData.phone)) newErrors.phone = "Valid 10-digit phone required";
     if (!formData.pan || !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(formData.pan.toUpperCase())) newErrors.pan = "Valid PAN required (e.g., ABCDE1234F)";
     if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "Valid email required";
@@ -67,14 +70,14 @@ export default function CIBILScore() {
     setStep("processing");
 
     try {
-  const { first_name, last_name } = splitFullName(formData.fullName);
+      const { first_name, last_name } = splitFullName(formData.fullName);
 
-    const payload = {
-      client_ref_num: "SOFT_CHECK",
-      mobile_no: formData.phone,
-      first_name,
-      last_name,
-    };
+      const payload = {
+        client_ref_num: "SOFT_CHECK",
+        mobile_no: formData.phone,
+        first_name,
+        last_name,
+      };
 
       const response = await api.post("/api/customer/bre/soft-report", payload);
       // console.log('response',response)
