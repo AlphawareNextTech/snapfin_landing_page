@@ -21,6 +21,7 @@ import LoanAgainstProperty from "./pages/LoanAgainstProperty";
 import { AIChatbot } from "./components/AIChatbot";
 import { AuthProvider } from "./auth/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import {CheckEligibiltyForm} from "./pages/CheckEligibiltyForm";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/eligibility" element={<CheckEligibility />} />
             <Route path="/apply" element={<Apply />} />
+            <Route path="/check" element={<CheckEligibiltyForm />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/contact" element={<Contact />} />

@@ -20,7 +20,7 @@ export function HeroSection() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [mobile, setMobile] = useState("");
-  const [loanType, setLoanType] = useState("personal");
+  const [loanType, setLoanType] = useState("business");
   // const [loanAmount, setLoanAmount] = useState("");
 
   const handleApplyNow = () => {
@@ -50,7 +50,7 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center pt-20 pb-16 overflow-hidden">
+    <section id="hero" className="relative min-h-screen flex items-center pt-20 pb-16 overflow-hidden">
       {/* Background Video */}
       <div className="absolute inset-0 w-full h-full">
         <video
@@ -201,24 +201,12 @@ export function HeroSection() {
                           onChange={(e) => setLoanType(e.target.value)}
                           className="w-full h-12 px-4 rounded-xl bg-background border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-secondary/50"
                         >
+                          <option value="business">Business Loan</option>
                           <option value="personal">Personal Loan</option>
                           <option value="lap">Loan Against Property</option>
-                          <option value="business">Business Loan</option>
                         </select>
                       </div>
                     </div>
-                    {/* <div>
-                      <label className="block text-sm text-muted-foreground mb-2">
-                        Loan Amount (₹)
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g., 5,00,000"
-                        value={loanAmount}
-                        onChange={(e) => setLoanAmount(e.target.value)}
-                        className="w-full h-12 px-4 rounded-xl bg-background border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-secondary/50"
-                      />
-                    </div> */}
                     <Button variant="hero" className="w-full" size="lg" onClick={handleCheckEligibility}>
                       Check Eligibility
                       <ArrowRight className="w-5 h-5" />

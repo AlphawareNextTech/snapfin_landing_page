@@ -171,7 +171,7 @@ export default function PartnerWithUs() {
                       <option value="DSA">DSA / Loan Agent</option>
                       <option value="CORPORATE_PARTNER">Corporate Partner</option>
                       <option value="FINTECH">Fintech Company</option>
-                      <option value="other">Other</option>
+                      <option value="OTHER">Other</option>
                     </select>
                     {errors.partnerType && <p className="text-sm text-destructive mt-1">{errors.partnerType}</p>}
                   </div>

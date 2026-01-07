@@ -4,23 +4,24 @@ import { Menu, X, ChevronDown, Moon, Sun, Phone, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import snapfinLogo from "@/assets/snapfin-logo.png";
-
+import { useAuth } from "@/auth/AuthContext";
+import { useNavigate } from "react-router-dom";
 const navLinks = [
   { name: "Home", href: "/" },
   {
     name: "Loans",
     href: "#loans",
     children: [
-      { name: "Loan Against Property", href: "/eligibility?type=lap" },
-      { name: "Personal Loan", href: "/eligibility?type=personal" },
-      { name: "Business Loan", href: "/eligibility?type=business" }
+      { name: "Loan Against Property", loanType: "lap" },
+      { name: "Personal Loan", loanType: "personal" },
+      { name: "Business Loan", loanType: "business" }
     ]
   },
   { name: "How It Works", href: "/#how-it-works" },
-  { 
-    name: "Check CIBIL Score", 
+  {
+    name: "Check CIBIL Score",
     href: "/cibil-score",
-    highlight: true 
+    highlight: true
   },
   { name: "FAQ", href: "/faq" },
   { name: "Partner With Us", href: "/partner" }
@@ -36,6 +37,8 @@ const moreLinks = [
 ];
 
 export function Header() {
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
@@ -72,8 +75,8 @@ export function Header() {
   return (
     <header className={cn(
       "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-      isScrolled 
-        ? "bg-background/95 backdrop-blur-xl border-b border-border shadow-snapfin-sm" 
+      isScrolled
+        ? "bg-background/95 backdrop-blur-xl border-b border-border shadow-snapfin-sm"
         : "bg-background/80 backdrop-blur-md"
     )}>
       <div className="container-snapfin">
@@ -86,8 +89,8 @@ export function Header() {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-1">
             {navLinks.map(link => (
-              <div 
-                key={link.name} 
+              <div
+                key={link.name}
                 className="relative"
                 onMouseEnter={() => link.children && setOpenDropdown(link.name)}
                 onMouseLeave={() => setOpenDropdown(null)}
@@ -98,12 +101,12 @@ export function Header() {
                     <ChevronDown className={cn("w-4 h-4 transition-transform", openDropdown === link.name && "rotate-180")} />
                   </button>
                 ) : (
-                  <Link 
-                    to={link.href} 
+                  <Link
+                    to={link.href}
                     className={cn(
                       "flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors",
-                      link.highlight 
-                        ? "text-secondary font-semibold relative" 
+                      link.highlight
+                        ? "text-secondary font-semibold relative"
                         : "text-muted-foreground hover:text-foreground"
                     )}
                   >
@@ -123,13 +126,25 @@ export function Header() {
                   )}>
                     <div className="bg-card rounded-xl border border-border shadow-snapfin-lg p-2 min-w-[220px]">
                       {link.children.map(child => (
-                        <Link 
-                          key={child.name} 
-                          to={child.href} 
-                          className="block px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+                        // <Link
+                        //   key={child.name}
+                        //   to={child.href}
+                        //   className="block px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+                        // >
+                        //   {child.name}
+                        // </Link>
+                        <button
+                          key={child.name}
+                          onClick={() =>
+                            navigate("/check", {
+                              state: { loanType: child.loanType }
+                            })
+                          }
+                          className="block w-full text-left px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
                         >
                           {child.name}
-                        </Link>
+                        </button>
+
                       ))}
                     </div>
                   </div>
@@ -140,19 +155,21 @@ export function Header() {
 
           {/* Desktop CTA */}
           <div className="hidden lg:flex items-center gap-3">
-            <button 
-              onClick={() => setIsDark(!isDark)} 
-              className="p-2 rounded-lg hover:bg-muted transition-colors" 
+            <button
+              onClick={() => setIsDark(!isDark)}
+              className="p-2 rounded-lg hover:bg-muted transition-colors"
               aria-label="Toggle theme"
             >
               {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/auth">Sign In</Link>
-            </Button>
-            <Button 
-              variant="hero" 
-              size="sm" 
+            {!isAuthenticated && (
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/auth">Sign In</Link>
+              </Button>
+            )}
+            <Button
+              variant="hero"
+              size="sm"
               className="gap-2 shadow-lg hover:shadow-xl transition-shadow animate-pulse-subtle"
               asChild
             >
@@ -161,10 +178,10 @@ export function Header() {
                 Book Free Call
               </Link>
             </Button>
-            
+
             {/* Hamburger Menu for Desktop */}
             <div className="relative more-menu-container">
-              <button 
+              <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsMoreMenuOpen(!isMoreMenuOpen);
@@ -174,11 +191,11 @@ export function Header() {
               >
                 <Menu className="w-5 h-5" />
               </button>
-              
+
               {isMoreMenuOpen && (
                 <div className="absolute top-full right-0 mt-2 w-56 bg-card rounded-xl border border-border shadow-snapfin-xl p-2 z-50">
                   {moreLinks.map(link => (
-                    <Link 
+                    <Link
                       key={link.name}
                       to={link.href}
                       onClick={() => setIsMoreMenuOpen(false)}
@@ -188,7 +205,7 @@ export function Header() {
                     </Link>
                   ))}
                   <div className="border-t border-border my-2" />
-                  <Link 
+                  <Link
                     to="/cibil-score"
                     onClick={() => setIsMoreMenuOpen(false)}
                     className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-secondary hover:bg-secondary/10 rounded-lg transition-colors"
@@ -203,9 +220,9 @@ export function Header() {
 
           {/* Mobile Menu Button */}
           <div className="flex lg:hidden items-center gap-2">
-            <Button 
-              variant="hero" 
-              size="sm" 
+            <Button
+              variant="hero"
+              size="sm"
               className="gap-1 text-xs px-3"
               asChild
             >
@@ -214,16 +231,16 @@ export function Header() {
                 Free Call
               </Link>
             </Button>
-            <button 
-              onClick={() => setIsDark(!isDark)} 
-              className="p-2 rounded-lg hover:bg-muted transition-colors" 
+            <button
+              onClick={() => setIsDark(!isDark)}
+              className="p-2 rounded-lg hover:bg-muted transition-colors"
               aria-label="Toggle theme"
             >
               {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
-            <button 
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
-              className="p-2 rounded-lg hover:bg-muted transition-colors" 
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 rounded-lg hover:bg-muted transition-colors"
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -241,7 +258,7 @@ export function Header() {
               <div key={link.name}>
                 {link.children ? (
                   <>
-                    <button 
+                    <button
                       className="w-full px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors flex items-center justify-between"
                       onClick={() => setOpenDropdown(openDropdown === link.name ? null : link.name)}
                     >
@@ -250,24 +267,37 @@ export function Header() {
                     </button>
                     <div className={cn("overflow-hidden transition-all duration-200", openDropdown === link.name ? "max-h-40" : "max-h-0")}>
                       {link.children.map(child => (
-                        <Link 
-                          key={child.name} 
-                          to={child.href}
-                          className="block px-8 py-2 text-sm text-muted-foreground hover:text-foreground"
-                          onClick={() => setIsMobileMenuOpen(false)}
+                        // <Link
+                        //   key={child.name}
+                        //   to={child.href}
+                        //   className="block px-8 py-2 text-sm text-muted-foreground hover:text-foreground"
+                        //   onClick={() => setIsMobileMenuOpen(false)}
+                        // >
+                        //   {child.name}
+                        // </Link>
+                        <button
+                          key={child.name}
+                          onClick={() => {
+                            navigate("/check", {
+                              state: { loanType: child.loanType }
+                            });
+                            setIsMobileMenuOpen(false);
+                          }}
+                          className="block w-full text-left px-8 py-2 text-sm text-muted-foreground hover:text-foreground"
                         >
                           {child.name}
-                        </Link>
+                        </button>
+
                       ))}
                     </div>
                   </>
                 ) : (
-                  <Link 
-                    to={link.href} 
+                  <Link
+                    to={link.href}
                     className={cn(
                       "px-4 py-3 text-sm font-medium hover:bg-muted rounded-lg transition-colors block flex items-center gap-2",
-                      link.highlight 
-                        ? "text-secondary font-semibold bg-secondary/10" 
+                      link.highlight
+                        ? "text-secondary font-semibold bg-secondary/10"
                         : "text-muted-foreground hover:text-foreground"
                     )}
                     onClick={() => setIsMobileMenuOpen(false)}
@@ -283,11 +313,11 @@ export function Header() {
                 )}
               </div>
             ))}
-            
+
             {/* Additional mobile links */}
             <div className="border-t border-border mt-2 pt-2">
               {moreLinks.map(link => (
-                <Link 
+                <Link
                   key={link.name}
                   to={link.href}
                   className="px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors block"
@@ -297,7 +327,7 @@ export function Header() {
                 </Link>
               ))}
             </div>
-            
+
             <div className="flex flex-col gap-2 pt-4 px-4">
               <Button variant="ghost" className="justify-center" asChild>
                 <Link to="/auth">Sign In</Link>

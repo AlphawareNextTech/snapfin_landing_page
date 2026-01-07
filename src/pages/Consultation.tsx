@@ -5,46 +5,93 @@ import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/ui/form-input";
 import { FormSelect } from "@/components/ui/form-select";
 import { ArrowRight, Phone, Calendar, Clock, Users, Star, CheckCircle2, Sparkles, Video, MessageSquare } from "lucide-react";
-
+import { toast } from "sonner";
+import api from "@/interceptor/axios";
+import { v4 as uuidv4 } from "uuid"; // import UUID
 interface FormData {
-  fullName: string;
-  phone: string;
-  email: string;
-  loanType: string;
-  loanAmount: string;
-  preferredTime: string;
-  message: string;
+  name: string;
+  companyName?: string;
+  mobileNumber: string;
+  city: string;
+  turnOver?: string;
+  followUpDate: string;
+  followUpTime: string;
+  note: string;
 }
 
 export default function Consultation() {
   const [formData, setFormData] = useState<FormData>({
-    fullName: "",
-    phone: "",
-    email: "",
-    loanType: "",
-    loanAmount: "",
-    preferredTime: "",
-    message: ""
+    name: "",
+    companyName: "",
+    mobileNumber: "",
+    city: "",
+    turnOver: "",
+    followUpDate: "",
+    followUpTime: "",
+    note: ""
   });
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const validate = () => {
     const newErrors: Partial<FormData> = {};
-    if (!formData.fullName) newErrors.fullName = "Name is required";
-    if (!formData.phone || !/^\d{10}$/.test(formData.phone)) newErrors.phone = "Valid 10-digit phone required";
-    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "Valid email required";
-    if (!formData.loanType) newErrors.loanType = "Please select a loan type";
-    if (!formData.preferredTime) newErrors.preferredTime = "Please select a preferred time";
+    if (!formData.name) newErrors.name = "Name is required";
+    if (!formData.companyName?.trim()) newErrors.companyName = "Company name is required";
+    if (!formData.mobileNumber || !/^\d{10}$/.test(formData.mobileNumber)) newErrors.mobileNumber = "Valid 10-digit phone required";
+    if (!formData.city.trim()) newErrors.city = "City is required";
+    if (!formData.followUpDate) newErrors.followUpDate = "Schedule date is required";
+    if (!formData.followUpTime) newErrors.followUpTime = "Schedule time is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!validate()) return;
+
     setIsSubmitted(true);
+
+    try {
+      // Prepare payload
+      const payload = {
+        name: formData.name,
+        companyName: formData.companyName,
+        mobileNumber: formData.mobileNumber,
+        city: formData.city,
+        turnOver: formData.turnOver,
+        followUpDate: formData.followUpDate,
+        followUpTime: formData.followUpTime,
+        note: formData.note,
+        uniqueIdentifier: uuidv4(),
+      };
+
+      const { data } = await api.post("/api/customer/contacts/create", payload);
+      console.log('data', data)
+      toast.success(data.message || "Contact created successfully");
+
+      // Reset form
+      setFormData({
+        name: "",
+        companyName: "",
+        mobileNumber: "",
+        city: "",
+        turnOver: "",
+        followUpDate: "",
+        followUpTime: "",
+        note: "",
+      });
+
+      setIsSubmitted(true);
+    } catch (err: any) {
+      console.error("API error:", err);
+      toast.error(
+        err?.response?.data?.message || "Something went wrong. Please try again."
+      );
+      setIsSubmitted(false);
+    }
   };
+
 
   const experts = [
     { name: "Rajesh Kumar", role: "Senior Loan Advisor", exp: "15+ years", avatar: "RK" },
@@ -69,7 +116,7 @@ export default function Consultation() {
               <span className="text-secondary">Consultation</span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto animate-fade-up delay-200">
-              Connect with our AI-trained loan experts to find the perfect financing solution. 
+              Connect with our AI-trained loan experts to find the perfect financing solution.
               Get personalized advice at no cost.
             </p>
           </div>
@@ -92,78 +139,94 @@ export default function Consultation() {
                   <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="grid md:grid-cols-2 gap-4">
                       <FormInput
-                        label="Full Name"
+                        label="Customer Name"
                         placeholder="Vikram Mehta"
-                        value={formData.fullName}
-                        onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
-                        error={errors.fullName}
+                        value={formData.name}
+                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                        error={errors.name}
+                        required
+                      />
+                      <FormInput
+                        label="Company Name"
+                        placeholder="pvt.ltd"
+                        value={formData.companyName}
+                        onChange={(e) => setFormData(prev => ({ ...prev, companyName: e.target.value }))}
+                        error={errors.companyName}
+                        required
+                      />
+
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <FormInput
+                        label="City"
+                        placeholder="Enter city name"
+                        value={formData.city}
+
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            city: e.target.value.replace(/[^a-zA-Z\s]/g, ""),
+                          }))
+                        }
+                        error={errors.city}
                         required
                       />
                       <FormInput
                         label="Phone Number"
                         placeholder="10-digit number"
-                        value={formData.phone}
-                        onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, "").slice(0, 10) }))}
-                        error={errors.phone}
+                        value={formData.mobileNumber}
+                        onChange={(e) => setFormData(prev => ({ ...prev, mobileNumber: e.target.value.replace(/\D/g, "").slice(0, 10) }))}
+                        error={errors.mobileNumber}
                         required
                       />
                     </div>
-
-                    <FormInput
-                      label="Email Address"
-                      type="email"
-                      placeholder="vikram.mehta@email.com"
-                      value={formData.email}
-                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                      error={errors.email}
-                      required
-                    />
 
                     <div className="grid md:grid-cols-2 gap-4">
-                      <FormSelect
-                        label="Loan Type"
-                        value={formData.loanType}
-                        onChange={(e) => setFormData(prev => ({ ...prev, loanType: e.target.value }))}
-                        error={errors.loanType}
+                      <FormInput
+                        label="Scheduled Date"
+                        type="date"
+                        value={formData.followUpDate}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            followUpDate: e.target.value,
+                          }))
+                        }
+                        error={errors.followUpDate}
                         required
-                        options={[
-                          { value: "", label: "Select loan type" },
-                          { value: "personal", label: "Personal Loan" },
-                          { value: "lap", label: "Loan Against Property" },
-                          { value: "business", label: "Business Loan" },
-                          { value: "unsure", label: "Not sure yet" }
-                        ]}
                       />
                       <FormInput
-                        label="Loan Amount (Optional)"
-                        placeholder="e.g., ₹10,00,000"
-                        value={formData.loanAmount}
-                        onChange={(e) => setFormData(prev => ({ ...prev, loanAmount: e.target.value }))}
+                        label="Scheduled Time"
+                        type="time"
+                        value={formData.followUpTime}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            followUpTime: e.target.value,
+                          }))
+                        }
+                        error={errors.followUpTime}
+                        required
                       />
+
+
                     </div>
-
-                    <FormSelect
-                      label="Preferred Time to Call"
-                      value={formData.preferredTime}
-                      onChange={(e) => setFormData(prev => ({ ...prev, preferredTime: e.target.value }))}
-                      error={errors.preferredTime}
-                      required
-                      options={[
-                        { value: "", label: "Select preferred time" },
-                        { value: "morning", label: "Morning (9 AM - 12 PM)" },
-                        { value: "afternoon", label: "Afternoon (12 PM - 4 PM)" },
-                        { value: "evening", label: "Evening (4 PM - 7 PM)" },
-                        { value: "anytime", label: "Anytime works" }
-                      ]}
-                    />
-
-                    <div>
+                    <div className="space-y-4">
+                      <FormInput
+                        label="Turn Over (Optional)"
+                        placeholder="Enter turnover"
+                        value={formData.turnOver}
+                        onChange={(e) => setFormData(prev => ({ ...prev, turnOver: e.target.value }))}
+                        error={errors.turnOver}
+                        required
+                      />
                       <label className="block text-sm font-medium text-foreground mb-2">
                         Additional Message (Optional)
                       </label>
                       <textarea
-                        value={formData.message}
-                        onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+                        value={formData.note}
+                        onChange={(e) => setFormData(prev => ({ ...prev, note: e.target.value }))}
                         placeholder="Tell us about your requirements..."
                         className="w-full h-24 px-4 py-3 rounded-xl bg-background border border-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-secondary/50 resize-none"
                       />
@@ -186,7 +249,7 @@ export default function Consultation() {
                   </div>
                   <h2 className="text-2xl font-bold text-foreground mb-3">Consultation Booked!</h2>
                   <p className="text-muted-foreground mb-6">
-                    Our expert will call you within 24 hours at your preferred time. 
+                    Our expert will call you within 24 hours at your preferred time.
                     Check your email for confirmation.
                   </p>
                   <div className="bg-muted/50 rounded-xl p-4 mb-6">
@@ -244,7 +307,7 @@ export default function Consultation() {
                       <div className="text-right">
                         <p className="text-sm font-medium text-secondary">{expert.exp}</p>
                         <div className="flex gap-0.5">
-                          {[1,2,3,4,5].map(n => <Star key={n} className="w-3 h-3 fill-accent text-accent" />)}
+                          {[1, 2, 3, 4, 5].map(n => <Star key={n} className="w-3 h-3 fill-accent text-accent" />)}
                         </div>
                       </div>
                     </div>

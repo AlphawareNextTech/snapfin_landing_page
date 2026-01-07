@@ -45,26 +45,34 @@ const propertyTypes = [
   { value: "co-owned", label: "Co-Owned Property" },
 ];
 
+const PRODUCT_KEY_MAP: Record<string, string> = {
+  personal: "personal_loan",
+  lap: "loan_against_property",
+  business: "business_loan",
+};
+
 
 export default function CheckEligibility() {
   const location = useLocation();
   const initialData = (location.state as EligibilityLocationState) || {};
   const [formData, setFormData] = useState<LeadFormData>({
     name: `${initialData.firstName ?? ""} ${initialData.lastName ?? ""}`.trim(),
-    email: "",
     city: "",
     mobileNumber: initialData.mobile || "",
     loanType: initialData.loanType || "",
     panNumber: "",
     pincode: "",
     loanAmount: "",
-    employment: "",
+    employmentType: "",
     propertyType: "",
     organisationName: "",
     businessVintage: "",
     businessType: "",
     consent: false,
   });
+
+  const productKey = PRODUCT_KEY_MAP[formData.loanType];
+  // console.log('productkey',productKey)
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEligible, setIsEligible] = useState<boolean | null>(null);
@@ -84,17 +92,9 @@ export default function CheckEligibility() {
     e.preventDefault();
     const newErrors: Record<string, string> = {};
     if (!formData.name) newErrors.name = "Please enter your full name";
-    if (!formData.email) {
-      newErrors.email = "Please enter your email address";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
     if (!formData.city) {
       newErrors.city = "Please enter your city";
     }
-    if (!formData.loanAmount) newErrors.loanAmount = "Please enter loan amount";
-    if (!formData.employment) newErrors.employment = "Please select employment type";
-    // if (!formData.income) newErrors.income = "Please select income range";
     if (!formData.mobileNumber) {
       newErrors.mobileNumber = "Please enter your mobile number";
     } else if (!validatemobileNumber(formData.mobileNumber)) {
@@ -110,13 +110,37 @@ export default function CheckEligibility() {
     } else if (!validatePincode(formData.pincode)) {
       newErrors.pincode = "Please enter a valid 6-digit pincode";
     }
-    if (!formData.propertyType) {
-      newErrors.propertyType = "Please select property type";
+    if (!formData.loanAmount) newErrors.loanAmount = "Please enter loan amount";
+    if (!formData.loanType)
+      newErrors.loanType = "Loan type is required";
+
+    if (formData.loanType === "personal") {
+      if (!formData.employmentType)
+        newErrors.employmentType = "Please select employment type";
     }
 
+    if (formData.loanType === "lap") {
+      if (!formData.employmentType)
+        newErrors.employmentType = "Please select employment type";
+      if (!formData.propertyType)
+        newErrors.propertyType = "Please select property type";
+    }
+
+    if (formData.loanType === "business") {
+      if (!formData.organisationName)
+        newErrors.organisationName = "Please enter organisation name";
+      if (!formData.businessVintage)
+        newErrors.businessVintage = "Please enter business vintage";
+      if (!formData.businessType)
+        newErrors.businessType = "Please select business type";
+    }
     if (!formData.consent) newErrors.consent = "Please accept the terms to continue";
 
     setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      console.log("Validation errors:", newErrors);
+      return;
+    }
 
     // if (Object.keys(newErrors).length === 0) {
     //   setIsSubmitting(true);
@@ -130,7 +154,8 @@ export default function CheckEligibility() {
     try {
       setIsSubmitting(true);
       const payload = {
-        productKey: "business_loan",
+        // productKey: "business_loan",
+        productKey,
         formData,
         notificationPreferences: {
           sms: true,
@@ -226,17 +251,7 @@ export default function CheckEligibility() {
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    error={errors.firstName}
-                  />
-                  <FormInput
-                    label="Email"
-                    type="email"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    error={errors.email}
+                    error={errors.name}
                   />
 
                   <FormInput
@@ -289,36 +304,89 @@ export default function CheckEligibility() {
                     error={errors.pincode}
                     helperText="Used to check service availability"
                   />
+
+                  <FormInput
+                    label="loan Type"
+                    required
+                    placeholder=""
+                    value={formData.loanType}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        loanType: e.target.value,
+                      })
+                    }
+                    error={errors.loanType}
+                  // helperText="Used to check service availability"
+                  />
+
+
                 </div>
 
-                {["personal", "lap"].includes(formData.loanType) && (
+                {formData.loanType === "lap" && (
                   <div className="grid sm:grid-cols-2 gap-6">
+                    <FormInput
+                      label="Loan Amount"
+                      required
+                      type="text"
+                      placeholder="e.g., 5,00,000"
+                      value={formData.loanAmount}
+                      onChange={(e) =>
+                        setFormData({ ...formData, loanAmount: e.target.value })
+                      }
+                      error={errors.loanAmount}
+                      helperText="Enter amount in ₹"
+                    />
                     <FormSelect
                       label="Employment Type"
                       required
                       options={employmentTypes}
                       placeholder="Select employment"
-                      value={formData.employment}
+                      value={formData.employmentType}
                       onChange={(e) =>
-                        setFormData({ ...formData, employment: e.target.value })
+                        setFormData({ ...formData, employmentType: e.target.value })
                       }
-                      error={errors.employment}
+                      error={errors.employmentType}
                     />
+                    <FormSelect
+                      label="Property Type"
+                      required
+                      options={propertyTypes}
+                      placeholder="Select property type"
+                      value={formData.propertyType}
+                      onChange={(e) =>
+                        setFormData({ ...formData, propertyType: e.target.value })
+                      }
+                      error={errors.propertyType}
+                    />
+                  </div>
+                )}
 
-                    {/* Show Property Type ONLY for LAP */}
-                    {formData.loanType === "lap" && (
-                      <FormSelect
-                        label="Property Type"
-                        required
-                        options={propertyTypes}
-                        placeholder="Select property type"
-                        value={formData.propertyType}
-                        onChange={(e) =>
-                          setFormData({ ...formData, propertyType: e.target.value })
-                        }
-                        error={errors.propertyType}
-                      />
-                    )}
+                {formData.loanType === "personal" && (
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    <FormInput
+                      label="Loan Amount"
+                      required
+                      type="text"
+                      placeholder="e.g., 5,00,000"
+                      value={formData.loanAmount}
+                      onChange={(e) =>
+                        setFormData({ ...formData, loanAmount: e.target.value })
+                      }
+                      error={errors.loanAmount}
+                      helperText="Enter amount in ₹"
+                    />
+                    <FormSelect
+                      label="Employment Type"
+                      required
+                      options={employmentTypes}
+                      placeholder="Select employment"
+                      value={formData.employmentType}
+                      onChange={(e) =>
+                        setFormData({ ...formData, employmentType: e.target.value })
+                      }
+                      error={errors.employmentType}
+                    />
                   </div>
                 )}
 
@@ -371,7 +439,6 @@ export default function CheckEligibility() {
                       helperText="Enter amount in ₹"
                     />
                   </div>
-
                 )}
 
                 <FormCheckbox
@@ -387,7 +454,6 @@ export default function CheckEligibility() {
                     </>
                   }
                 />
-
                 <Button
                   type="submit"
                   variant="hero"
@@ -429,3 +495,6 @@ export default function CheckEligibility() {
     </div>
   );
 }
+
+
+

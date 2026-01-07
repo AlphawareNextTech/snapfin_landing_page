@@ -636,9 +636,9 @@ export default function Auth() {
       return;
     }
 
-    if (mode === "otp" && otpSent && otp.length !== 6) {
+    if (mode === "otp" && otpSent && otp.length !== 4) {
       setIsLoading(false);
-      setAuthError("Please enter a valid 6-digit OTP");
+      setAuthError("Please enter a valid 4-digit OTP");
       return;
     }
 

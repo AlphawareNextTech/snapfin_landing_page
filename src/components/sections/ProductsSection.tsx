@@ -72,8 +72,19 @@ export function ProductsSection() {
   const navigate = useNavigate();
 
   const handleCheckEligibility = (loanType: string) => {
-    navigate("/eligibility", { state: { loanType } });
+    navigate("/check", { state: { loanType } });
   };
+
+  // const scrollToHero = () => {
+  //   const hero = document.getElementById("hero");
+  //   if (hero) {
+  //     hero.scrollIntoView({
+  //       behavior: "smooth",
+  //       block: "start",
+  //     });
+  //   }
+  // };
+
 
   return (
     <section id="loans" className="py-20 lg:py-28">
@@ -95,11 +106,10 @@ export function ProductsSection() {
             <div
               key={product.id}
               id={product.id}
-              className={`relative card-interactive p-6 lg:p-8 animate-fade-up ${
-                product.featured
+              className={`relative card-interactive p-6 lg:p-8 animate-fade-up ${product.featured
                   ? "ring-2 ring-secondary shadow-snapfin-glow"
                   : ""
-              }`}
+                }`}
               style={{ animationDelay: `${(index + 1) * 100}ms` }}
             >
               {/* Featured Badge */}
@@ -112,13 +122,12 @@ export function ProductsSection() {
               {/* Icon & Title */}
               <div className="flex items-start gap-4 mb-6">
                 <div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
-                    product.color === "primary"
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${product.color === "primary"
                       ? "bg-primary/10 text-primary"
                       : product.color === "secondary"
-                      ? "bg-secondary/10 text-secondary"
-                      : "bg-accent/20 text-accent-foreground"
-                  }`}
+                        ? "bg-secondary/10 text-secondary"
+                        : "bg-accent/20 text-accent-foreground"
+                    }`}
                 >
                   <product.icon className="w-6 h-6" />
                 </div>
@@ -187,6 +196,15 @@ export function ProductsSection() {
                 Apply now
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Button>
+              {/* <Button
+                variant={product.featured ? "hero" : "outline"}
+                className="w-full group"
+                onClick={scrollToHero}
+              >
+                Apply now
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Button> */}
+
             </div>
           ))}
         </div>
