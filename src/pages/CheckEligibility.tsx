@@ -502,7 +502,7 @@ export default function CheckEligibility() {
                       <>Checking Eligibility...</>
                     ) : (
                       <>
-                        Check Eligibility
+                        Submit
                         <ArrowRight className="w-5 h-5" />
                       </>
                     )}

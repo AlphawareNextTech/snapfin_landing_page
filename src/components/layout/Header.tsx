@@ -12,9 +12,9 @@ const navLinks = [
     name: "Loans",
     href: "#loans",
     children: [
+      { name: "Business Loan", loanType: "business" },
       { name: "Loan Against Property", loanType: "lap" },
-      { name: "Personal Loan", loanType: "personal" },
-      { name: "Business Loan", loanType: "business" }
+      { name: "Personal Loan", loanType: "personal" }
     ]
   },
   { name: "How It Works", href: "/#how-it-works" },
