@@ -51,6 +51,13 @@ const PRODUCT_KEY_MAP: Record<string, string> = {
   business: "business_loan",
 };
 
+const loanImages: Record<string, string> = {
+  lap: "/lap.png",
+  personal: "/personal.png",
+  business: "/business.png",
+};
+
+
 
 export default function CheckEligibility() {
   const location = useLocation();
@@ -72,6 +79,9 @@ export default function CheckEligibility() {
   });
 
   const productKey = PRODUCT_KEY_MAP[formData.loanType];
+  const selectedImage =
+    loanImages[formData.loanType] || "/default-loan.png";
+
   // console.log('productkey',productKey)
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -225,276 +235,303 @@ export default function CheckEligibility() {
         </div>
       </header>
 
-      <main className="py-12 lg:py-20">
-        <div className="container-snapfin">
-          <div className="max-w-2xl mx-auto">
-            {/* Page Header */}
-            <div className="text-center mb-10">
-              <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-                Check Your Eligibility
-              </h1>
-              <p className="text-lg text-muted-foreground">
-                Quick check with no impact on your credit score
-              </p>
-            </div>
+      <main className="py-12 lg:py-10">
+        <div className="text-center mb-10">
+          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+            Check Your Eligibility
+          </h1>
+          <p className="text-lg text-muted-foreground">
+            Quick check with no impact on your credit score
+          </p>
+        </div>
+        <div className="grid lg:grid-cols-2 gap-8 items-center max-w-7xl mx-auto px-6">
 
-            {/* Form */}
-            <div className="bg-card rounded-2xl border border-border shadow-snapfin-lg p-6 sm:p-8">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid sm:grid-cols-2 gap-6">
-                  <FormInput
-                    label="Full Name"
-                    required
-                    type="text"
-                    placeholder="Enter Full Name"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    error={errors.name}
-                  />
+          {/* LEFT SIDE IMAGE */}
+          {/* <div className="hidden lg:flex h-full">
+            <img
+              // src="/personal-loan.png"
+               src={selectedImage}
+              alt="Check Eligibility"
+              className="w-full  object-cover rounded-3xl"
+            />
+          </div> */}
+          <div className="hidden lg:flex h-full min-h-[500px]">
+            <img
+              src={selectedImage}
+              alt="Check Eligibility"
+              className="w-full h-auto rounded-3xl"
+            />
+          </div>
 
-                  <FormInput
-                    label="City"
-                    value={formData.city}
-                    placeholder="Enter your city"
-                    onChange={(e) =>
-                      setFormData({ ...formData, city: e.target.value })
-                    }
-                    error={errors.city}
-                  />
+          <div className="flex justify-center">
+            <div className="max-w-2xl w-full">
+              {/* Page Header */}
+              {/* <div className="text-center mb-10">
+                <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+                  Check Your Eligibility
+                </h1>
+                <p className="text-lg text-muted-foreground">
+                  Quick check with no impact on your credit score
+                </p>
+              </div> */}
 
-                  <FormInput
-                    label="Mobile Number"
-                    required
-                    type="tel"
-                    placeholder="10-digit mobile number"
-                    value={formData.mobileNumber}
-                    onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value.replace(/\D/g, "").slice(0, 10) })}
-                    error={errors.mobileNumber}
-                  />
-                  <FormInput
-                    label="PAN Number"
-                    required
-                    type="text"
-                    placeholder="ABCDE1234F"
-                    value={formData.panNumber}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        panNumber: e.target.value.toUpperCase().slice(0, 10),
-                      })
-                    }
-                    error={errors.panNumber}
-                    helperText="Used for eligibility check only"
-                  />
-
-                  <FormInput
-                    label="Pincode"
-                    required
-                    type="text"
-                    placeholder="6-digit pincode"
-                    value={formData.pincode}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        pincode: e.target.value.replace(/\D/g, "").slice(0, 6),
-                      })
-                    }
-                    error={errors.pincode}
-                    helperText="Used to check service availability"
-                  />
-
-                  <FormInput
-                    label="loan Type"
-                    required
-                    placeholder=""
-                    value={formData.loanType}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        loanType: e.target.value,
-                      })
-                    }
-                    error={errors.loanType}
-                  // helperText="Used to check service availability"
-                  />
-
-
-                </div>
-
-                {formData.loanType === "lap" && (
+              {/* Form */}
+              <div className="bg-card rounded-2xl border border-border shadow-snapfin-lg p-6 sm:p-8">
+                <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid sm:grid-cols-2 gap-6">
                     <FormInput
-                      label="Loan Amount"
+                      label="Full Name"
                       required
                       type="text"
-                      placeholder="e.g., 5,00,000"
-                      value={formData.loanAmount}
+                      placeholder="Enter Full Name"
+                      value={formData.name}
                       onChange={(e) =>
-                        setFormData({ ...formData, loanAmount: e.target.value })
+                        setFormData({ ...formData, name: e.target.value })
                       }
-                      error={errors.loanAmount}
-                      helperText="Enter amount in ₹"
+                      error={errors.name}
                     />
-                    <FormSelect
-                      label="Employment Type"
+
+                    <FormInput
+                      label="City"
+                      value={formData.city}
+                      placeholder="Enter your city"
+                      onChange={(e) =>
+                        setFormData({ ...formData, city: e.target.value })
+                      }
+                      error={errors.city}
+                    />
+
+                    <FormInput
+                      label="Mobile Number"
                       required
-                      options={employmentTypes}
-                      placeholder="Select employment"
-                      value={formData.employmentType}
-                      onChange={(e) =>
-                        setFormData({ ...formData, employmentType: e.target.value })
-                      }
-                      error={errors.employmentType}
+                      type="tel"
+                      placeholder="10-digit mobile number"
+                      value={formData.mobileNumber}
+                      onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value.replace(/\D/g, "").slice(0, 10) })}
+                      error={errors.mobileNumber}
                     />
-                    <FormSelect
-                      label="Property Type"
+                    <FormInput
+                      label="PAN Number"
                       required
-                      options={propertyTypes}
-                      placeholder="Select property type"
-                      value={formData.propertyType}
+                      type="text"
+                      placeholder="ABCDE1234F"
+                      value={formData.panNumber}
                       onChange={(e) =>
-                        setFormData({ ...formData, propertyType: e.target.value })
+                        setFormData({
+                          ...formData,
+                          panNumber: e.target.value.toUpperCase().slice(0, 10),
+                        })
                       }
-                      error={errors.propertyType}
+                      error={errors.panNumber}
+                      helperText="Used for eligibility check only"
                     />
+
+                    <FormInput
+                      label="Pincode"
+                      required
+                      type="text"
+                      placeholder="6-digit pincode"
+                      value={formData.pincode}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          pincode: e.target.value.replace(/\D/g, "").slice(0, 6),
+                        })
+                      }
+                      error={errors.pincode}
+                      helperText="Used to check service availability"
+                    />
+
+                    <FormInput
+                      label="loan Type"
+                      required
+                      placeholder=""
+                      value={formData.loanType}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          loanType: e.target.value,
+                        })
+                      }
+                      error={errors.loanType}
+                    // helperText="Used to check service availability"
+                    />
+
+
                   </div>
-                )}
 
-                {formData.loanType === "personal" && (
-                  <div className="grid sm:grid-cols-2 gap-6">
-                    <FormInput
-                      label="Loan Amount"
-                      required
-                      type="text"
-                      placeholder="e.g., 5,00,000"
-                      value={formData.loanAmount}
-                      onChange={(e) =>
-                        setFormData({ ...formData, loanAmount: e.target.value })
-                      }
-                      error={errors.loanAmount}
-                      helperText="Enter amount in ₹"
-                    />
-                    <FormSelect
-                      label="Employment Type"
-                      required
-                      options={employmentTypes}
-                      placeholder="Select employment"
-                      value={formData.employmentType}
-                      onChange={(e) =>
-                        setFormData({ ...formData, employmentType: e.target.value })
-                      }
-                      error={errors.employmentType}
-                    />
-                  </div>
-                )}
-
-                {formData.loanType === "business" && (
-                  <div className="grid sm:grid-cols-2 gap-6">
-                    <FormInput
-                      label="Organization Name"
-                      required
-                      type="text"
-                      placeholder="Enter organization name"
-                      value={formData.organisationName}
-                      onChange={(e) =>
-                        setFormData({ ...formData, organisationName: e.target.value })
-                      }
-                      error={errors.organisationName}
-                    />
-
-                    <FormInput
-                      label="Business Vintage (Years)"
-                      required
-                      type="number"
-                      min={0}
-                      placeholder="e.g. 3"
-                      value={formData.businessVintage}
-                      onChange={(e) =>
-                        setFormData({ ...formData, businessVintage: e.target.value })
-                      }
-                      error={errors.businessVintage}
-                      helperText="Number of years in business"
-                    />
-                    <FormSelect
-                      label="Business Type"
-                      required
-                      options={businessType}
-                      placeholder="Select business type"
-                      value={formData.businessType}
-                      onChange={(e) =>
-                        setFormData({ ...formData, businessType: e.target.value })
-                      }
-                      error={errors.businessType}
-                    />
-                    <FormInput
-                      label="Loan Amount"
-                      required
-                      type="text"
-                      placeholder="e.g., 5,00,000"
-                      value={formData.loanAmount}
-                      onChange={(e) => setFormData({ ...formData, loanAmount: e.target.value })}
-                      error={errors.loanAmount}
-                      helperText="Enter amount in ₹"
-                    />
-                  </div>
-                )}
-
-                <FormCheckbox
-                  checked={formData.consent}
-                  onCheckedChange={(checked) => setFormData({ ...formData, consent: checked as boolean })}
-                  error={errors.consent}
-                  label={
-                    <>
-                      I agree to the{" "}
-                      <a href="#terms" className="text-secondary hover:underline">Terms of Service</a>
-                      {" "}and{" "}
-                      <a href="#privacy" className="text-secondary hover:underline">Privacy Policy</a>
-                    </>
-                  }
-                />
-                <Button
-                  type="submit"
-                  variant="hero"
-                  size="lg"
-                  className="w-full"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>Checking Eligibility...</>
-                  ) : (
-                    <>
-                      Check Eligibility
-                      <ArrowRight className="w-5 h-5" />
-                    </>
+                  {formData.loanType === "lap" && (
+                    <div className="grid sm:grid-cols-2 gap-6">
+                      <FormInput
+                        label="Loan Amount"
+                        required
+                        type="text"
+                        placeholder="e.g., 5,00,000"
+                        value={formData.loanAmount}
+                        onChange={(e) =>
+                          setFormData({ ...formData, loanAmount: e.target.value })
+                        }
+                        error={errors.loanAmount}
+                        helperText="Enter amount in ₹"
+                      />
+                      <FormSelect
+                        label="Employment Type"
+                        required
+                        options={employmentTypes}
+                        placeholder="Select employment"
+                        value={formData.employmentType}
+                        onChange={(e) =>
+                          setFormData({ ...formData, employmentType: e.target.value })
+                        }
+                        error={errors.employmentType}
+                      />
+                      <FormSelect
+                        label="Property Type"
+                        required
+                        options={propertyTypes}
+                        placeholder="Select property type"
+                        value={formData.propertyType}
+                        onChange={(e) =>
+                          setFormData({ ...formData, propertyType: e.target.value })
+                        }
+                        error={errors.propertyType}
+                      />
+                    </div>
                   )}
-                </Button>
-              </form>
 
-              {/* Trust indicators */}
-              <div className="flex flex-wrap justify-center gap-6 mt-8 pt-6 border-t border-border">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Shield className="w-4 h-4 text-secondary" />
-                  Bank-level encryption
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Lock className="w-4 h-4 text-secondary" />
-                  Your data is safe
+                  {formData.loanType === "personal" && (
+                    <div className="grid sm:grid-cols-2 gap-6">
+                      <FormInput
+                        label="Loan Amount"
+                        required
+                        type="text"
+                        placeholder="e.g., 5,00,000"
+                        value={formData.loanAmount}
+                        onChange={(e) =>
+                          setFormData({ ...formData, loanAmount: e.target.value })
+                        }
+                        error={errors.loanAmount}
+                        helperText="Enter amount in ₹"
+                      />
+                      <FormSelect
+                        label="Employment Type"
+                        required
+                        options={employmentTypes}
+                        placeholder="Select employment"
+                        value={formData.employmentType}
+                        onChange={(e) =>
+                          setFormData({ ...formData, employmentType: e.target.value })
+                        }
+                        error={errors.employmentType}
+                      />
+                    </div>
+                  )}
+
+                  {formData.loanType === "business" && (
+                    <div className="grid sm:grid-cols-2 gap-6">
+                      <FormInput
+                        label="Organization Name"
+                        required
+                        type="text"
+                        placeholder="Enter organization name"
+                        value={formData.organisationName}
+                        onChange={(e) =>
+                          setFormData({ ...formData, organisationName: e.target.value })
+                        }
+                        error={errors.organisationName}
+                      />
+
+                      <FormInput
+                        label="Business Vintage (Years)"
+                        required
+                        type="number"
+                        min={0}
+                        placeholder="e.g. 3"
+                        value={formData.businessVintage}
+                        onChange={(e) =>
+                          setFormData({ ...formData, businessVintage: e.target.value })
+                        }
+                        error={errors.businessVintage}
+                        helperText="Number of years in business"
+                      />
+                      <FormSelect
+                        label="Business Type"
+                        required
+                        options={businessType}
+                        placeholder="Select business type"
+                        value={formData.businessType}
+                        onChange={(e) =>
+                          setFormData({ ...formData, businessType: e.target.value })
+                        }
+                        error={errors.businessType}
+                      />
+                      <FormInput
+                        label="Loan Amount"
+                        required
+                        type="text"
+                        placeholder="e.g., 5,00,000"
+                        value={formData.loanAmount}
+                        onChange={(e) => setFormData({ ...formData, loanAmount: e.target.value })}
+                        error={errors.loanAmount}
+                        helperText="Enter amount in ₹"
+                      />
+                    </div>
+                  )}
+
+                  <FormCheckbox
+                    checked={formData.consent}
+                    onCheckedChange={(checked) => setFormData({ ...formData, consent: checked as boolean })}
+                    error={errors.consent}
+                    label={
+                      <>
+                        I agree to the{" "}
+                        <a href="#terms" className="text-secondary hover:underline">Terms of Service</a>
+                        {" "}and{" "}
+                        <a href="#privacy" className="text-secondary hover:underline">Privacy Policy</a>
+                      </>
+                    }
+                  />
+                  <Button
+                    type="submit"
+                    variant="hero"
+                    size="lg"
+                    className="w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>Checking Eligibility...</>
+                    ) : (
+                      <>
+                        Check Eligibility
+                        <ArrowRight className="w-5 h-5" />
+                      </>
+                    )}
+                  </Button>
+                </form>
+
+                {/* Trust indicators */}
+                <div className="flex flex-wrap justify-center gap-6 mt-8 pt-6 border-t border-border">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Shield className="w-4 h-4 text-secondary" />
+                    Bank-level encryption
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Lock className="w-4 h-4 text-secondary" />
+                    Your data is safe
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Info Banner */}
-            <AlertBanner variant="info" className="mt-6">
-              This is a soft check and will not affect your credit score. Final approval is subject to document verification.
-            </AlertBanner>
+              {/* Info Banner */}
+              <AlertBanner variant="info" className="mt-6">
+                This is a soft check and will not affect your credit score. Final approval is subject to document verification.
+              </AlertBanner>
+            </div>
           </div>
         </div>
       </main>
     </div>
   );
 }
-
 
 

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Mail, Phone, MapPin, Linkedin, Twitter, Facebook } from "lucide-react";
+import { Mail, Phone, MapPin, Linkedin, Twitter, Facebook, Instagram } from "lucide-react";
 import snapfinLogo from "@/assets/snapfin-logo.png";
 
 const footerLinks = {
@@ -51,11 +51,18 @@ export function Footer() {
             </p>
             <div className="flex items-center gap-3">
               <a
-                href="#linkedin"
+                href="https://www.linkedin.com/company/snapfintech"
                 className="w-10 h-10 rounded-lg bg-muted hover:bg-primary hover:text-primary-foreground flex items-center justify-center transition-colors"
                 aria-label="LinkedIn"
               >
                 <Linkedin className="w-5 h-5" />
+              </a>
+                <a
+                href="https://www.instagram.com/snapfintech"
+                className="w-10 h-10 rounded-lg bg-muted hover:bg-primary hover:text-primary-foreground flex items-center justify-center transition-colors"
+                aria-label="Instagram"
+              >
+                <Instagram className="w-5 h-5" />
               </a>
               <a
                 href="#twitter"
