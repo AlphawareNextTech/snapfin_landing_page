@@ -44,8 +44,8 @@ export default function CIBILScore() {
     }
     if (!formData.phone || !/^\d{10}$/.test(formData.phone)) newErrors.phone = "Valid 10-digit phone required";
     if (!formData.pan || !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(formData.pan.toUpperCase())) newErrors.pan = "Valid PAN required (e.g., ABCDE1234F)";
-    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "Valid email required";
-    if (!formData.dob) newErrors.dob = "Date of birth is required";
+    // if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "Valid email required";
+    // if (!formData.dob) newErrors.dob = "Date of birth is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -178,14 +178,14 @@ export default function CIBILScore() {
                   ...prev,
                   pan: e.target.value.toUpperCase().slice(0, 10)
                 }))} error={errors.pan} required />
-                <FormInput label="Email Address" type="email" placeholder="your@email.com" value={formData.email} onChange={e => setFormData(prev => ({
+                <FormInput label="Email Address (Optional)" type="email" placeholder="your@email.com" value={formData.email} onChange={e => setFormData(prev => ({
                   ...prev,
                   email: e.target.value
-                }))} error={errors.email} required />
-                <FormInput label="Date of Birth" type="date" value={formData.dob} onChange={e => setFormData(prev => ({
+                }))} error={errors.email}/>
+                <FormInput label="Date of Birth (Optional)" type="date" value={formData.dob} onChange={e => setFormData(prev => ({
                   ...prev,
                   dob: e.target.value
-                }))} error={errors.dob} required />
+                }))} error={errors.dob}/>
 
                 <Button type="submit" variant="hero" size="lg" className="w-full group">
                   Check My CIBIL Score
